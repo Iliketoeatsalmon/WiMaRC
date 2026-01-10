@@ -1,0 +1,106 @@
+[00:00:02.473] Server  LOG     
+[00:00:02.473] Server  LOG        We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+[00:00:02.473] Server  LOG        The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+[00:00:02.474] Server  LOG        	- include was updated to add '.next/dev/types/**/*.ts'
+[00:00:02.474] Server  LOG     
+[00:00:02.474] Server  LOG        The following mandatory changes were made to your tsconfig.json:
+
+[00:00:02.474] Server  LOG        	- jsx was set to react-jsx (next.js uses the React automatic runtime)
+[00:00:02.474] Server  LOG     
+[00:00:02.582] Server  LOG      ✓ Ready in 2.4s
+[00:00:10.071] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:10.071] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/stations/weather-1","route":"/stations/[id]"}
+[00:00:10.071] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations/weather-1 color: rgb(120, 120, 120) color: inherit {"dp":"/stations/[id]","o":"http://localhost:3000/stations/weather-1","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768035980390}
+[00:00:10.071] Browser WARN    Image with src "/placeholder.svg?height=200&width=300" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:00:13.558] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/activities color: rgb(120, 120, 120) color: inherit {"dp":"/activities","o":"http://localhost:3000/activities","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768035983889}
+[00:00:15.206] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/comparison color: rgb(120, 120, 120) color: inherit {"dp":"/comparison","o":"http://localhost:3000/comparison","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768035985535}
+[00:00:19.024] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768035989347}
+[00:00:49.964] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations color: rgb(120, 120, 120) color: inherit {"dp":"/stations","o":"http://localhost:3000/stations","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036020294}
+[00:00:55.237] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/map color: rgb(120, 120, 120) color: inherit {"dp":"/map","o":"http://localhost:3000/map","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036025508}
+[00:00:55.237] Browser WARN    As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide.
+[00:00:55.512] Browser ERROR   Google Maps JavaScript API error: InvalidKeyMapError
+https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key-map-error
+[00:01:00.230] Browser WARN    Google Maps JavaScript API warning: InvalidKey https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key
+[00:01:05.255] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036035487}
+[00:01:05.255] Browser WARN    Element with name "gmp-internal-loading-text" already defined.
+[00:01:05.255] Browser WARN    Element with name "gmp-internal-request-error-text" already defined.
+[00:01:05.255] Browser WARN    Element with name "gmp-internal-back-button" already defined.
+[00:01:05.255] Browser WARN    Element with name "gmp-internal-dialog" already defined.
+[00:01:05.255] Browser WARN    Element with name "gmp-internal-disclosure" already defined.
+[00:01:05.255] Browser WARN    Element with name "gmp-internal-disclosure-section" already defined.
+[00:01:05.255] Browser WARN    Element with name "gmp-internal-attribution" already defined.
+[00:01:05.255] Browser WARN    Element with name "gmp-internal-element-support-verification" already defined.
+[00:01:05.255] Browser WARN    Element with name "gmp-map" already defined.
+[00:01:10.083] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/login color: rgb(120, 120, 120) color: inherit {"dp":"/login","o":"http://localhost:3000/login","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036040413}
+[00:01:10.265] Browser WARN    Element with name "gmp-pin" already defined.
+[00:01:10.265] Browser WARN    Google Maps JavaScript API warning: InvalidKey https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key
+[00:01:18.023] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036048346}
+[00:01:19.694] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/activities color: rgb(120, 120, 120) color: inherit {"dp":"/activities","o":"http://localhost:3000/activities","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036050006}
+[00:01:20.522] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/comparison color: rgb(120, 120, 120) color: inherit {"dp":"/comparison","o":"http://localhost:3000/comparison","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036050840}
+[00:01:21.303] Browser ERROR   google api is already presented
+[00:01:21.303] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/map color: rgb(120, 120, 120) color: inherit {"dp":"/map","o":"http://localhost:3000/map","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036051623}
+[00:01:24.191] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036054476}
+[00:01:24.191] Browser WARN    Element with name "gmp-internal-loading-text" already defined.
+[00:01:24.191] Browser WARN    Element with name "gmp-internal-request-error-text" already defined.
+[00:01:24.191] Browser WARN    Element with name "gmp-internal-back-button" already defined.
+[00:01:24.191] Browser WARN    Element with name "gmp-internal-dialog" already defined.
+[00:01:24.191] Browser WARN    Element with name "gmp-internal-disclosure" already defined.
+[00:01:24.191] Browser WARN    Element with name "gmp-internal-disclosure-section" already defined.
+[00:01:24.191] Browser WARN    Element with name "gmp-internal-attribution" already defined.
+[00:01:24.191] Browser WARN    Element with name "gmp-internal-element-support-verification" already defined.
+[00:01:24.191] Browser WARN    Element with name "gmp-map" already defined.
+[00:01:26.012] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations color: rgb(120, 120, 120) color: inherit {"dp":"/stations","o":"http://localhost:3000/stations","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036056326}
+[00:01:27.033] Browser ERROR   google api is already presented
+[00:01:27.033] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/map color: rgb(120, 120, 120) color: inherit {"dp":"/map","o":"http://localhost:3000/map","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036057355}
+[00:01:27.808] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/comparison color: rgb(120, 120, 120) color: inherit {"dp":"/comparison","o":"http://localhost:3000/comparison","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036058105}
+[00:01:27.808] Browser WARN    Element with name "gmp-internal-loading-text" already defined.
+[00:01:27.808] Browser WARN    Element with name "gmp-internal-request-error-text" already defined.
+[00:01:27.808] Browser WARN    Element with name "gmp-internal-back-button" already defined.
+[00:01:27.808] Browser WARN    Element with name "gmp-internal-dialog" already defined.
+[00:01:27.808] Browser WARN    Element with name "gmp-internal-disclosure" already defined.
+[00:01:27.808] Browser WARN    Element with name "gmp-internal-disclosure-section" already defined.
+[00:01:27.808] Browser WARN    Element with name "gmp-internal-attribution" already defined.
+[00:01:27.808] Browser WARN    Element with name "gmp-internal-element-support-verification" already defined.
+[00:01:27.808] Browser WARN    Element with name "gmp-map" already defined.
+[00:01:28.407] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/activities color: rgb(120, 120, 120) color: inherit {"dp":"/activities","o":"http://localhost:3000/activities","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036058724}
+[00:01:29.211] Browser ERROR   google api is already presented
+[00:01:29.211] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/map color: rgb(120, 120, 120) color: inherit {"dp":"/map","o":"http://localhost:3000/map","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036059484}
+[00:01:29.211] Browser WARN    Element with name "gmp-pin" already defined.
+[00:01:29.211] Browser ERROR   unhandledRejection: TypeError: undefined is not an object (evaluating 'p.eJ')
+[00:01:29.547] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/comparison color: rgb(120, 120, 120) color: inherit {"dp":"/comparison","o":"http://localhost:3000/comparison","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036059853}
+[00:01:29.547] Browser WARN    Element with name "gmp-internal-loading-text" already defined.
+[00:01:29.547] Browser WARN    Element with name "gmp-internal-request-error-text" already defined.
+[00:01:29.547] Browser WARN    Element with name "gmp-internal-back-button" already defined.
+[00:01:29.547] Browser WARN    Element with name "gmp-internal-dialog" already defined.
+[00:01:29.547] Browser WARN    Element with name "gmp-internal-disclosure" already defined.
+[00:01:29.547] Browser WARN    Element with name "gmp-internal-disclosure-section" already defined.
+[00:01:29.547] Browser WARN    Element with name "gmp-internal-attribution" already defined.
+[00:01:29.547] Browser WARN    Element with name "gmp-internal-element-support-verification" already defined.
+[00:01:29.547] Browser WARN    Element with name "gmp-map" already defined.
+[00:01:32.812] Browser WARN    Google Maps JavaScript API warning: InvalidKey https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key
+[00:01:34.556] Browser WARN    Element with name "gmp-pin" already defined.
+[00:01:34.556] Browser WARN    Google Maps JavaScript API warning: InvalidKey https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key
+[00:10:51.329] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/login color: rgb(120, 120, 120) color: inherit {"dp":"/login","o":"http://localhost:3000/login","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036621659}
+[00:12:15.157] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768036705468}
+[00:25:00.729] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/login color: rgb(120, 120, 120) color: inherit {"dp":"/login","o":"http://localhost:3000/login","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768037471064}
+[00:25:05.411] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768037475724}
+[00:25:10.736] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/login color: rgb(120, 120, 120) color: inherit {"dp":"/login","o":"http://localhost:3000/login","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768037481071}
+[00:25:16.976] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768037487303}
+[00:27:24.070] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations/weather-1 color: rgb(120, 120, 120) color: inherit {"dp":"/stations/[id]","o":"http://localhost:3000/stations/weather-1","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768037614177}
+[00:44:39.965] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:44:39.965] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/stations/weather-1","route":"/stations/[id]"}
+[00:44:39.965] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations/weather-1 color: rgb(120, 120, 120) color: inherit {"dp":"/stations/[id]","o":"http://localhost:3000/stations/weather-1","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038650283}
+[00:44:39.965] Browser WARN    Image with src "/placeholder.svg?height=200&width=300" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:45:16.192] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038686521}
+[00:45:18.392] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations color: rgb(120, 120, 120) color: inherit {"dp":"/stations","o":"http://localhost:3000/stations","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038688728}
+[00:45:19.827] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038690155}
+[00:47:11.144] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations color: rgb(120, 120, 120) color: inherit {"dp":"/stations","o":"http://localhost:3000/stations","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038801455}
+[00:47:20.478] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038810804}
+[00:47:21.251] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations color: rgb(120, 120, 120) color: inherit {"dp":"/stations","o":"http://localhost:3000/stations","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038811573}
+[00:47:22.481] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations/weather-1 color: rgb(120, 120, 120) color: inherit {"dp":"/stations/[id]","o":"http://localhost:3000/stations/weather-1","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038812671}
+[00:47:24.280] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038814612}
+[00:47:25.945] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/stations/weather-1 color: rgb(120, 120, 120) color: inherit {"dp":"/stations/[id]","o":"http://localhost:3000/stations/weather-1","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038816192}
+[00:47:33.699] Browser LOG     %c[Vercel Web Analytics]%c [pageview] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.3.1","sv":"0.1.3","ts":1768038824028}

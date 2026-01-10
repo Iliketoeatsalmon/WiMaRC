@@ -1,0 +1,9 @@
+{
+  "/activities/page": "app/activities/page.js",
+  "/comparison/page": "app/comparison/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/login/page": "app/login/page.js",
+  "/map/page": "app/map/page.js",
+  "/stations/[id]/page": "app/stations/[id]/page.js",
+  "/stations/page": "app/stations/page.js"
+}
