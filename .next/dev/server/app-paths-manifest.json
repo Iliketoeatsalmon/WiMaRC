@@ -4,6 +4,8 @@
   "/dashboard/page": "app/dashboard/page.js",
   "/login/page": "app/login/page.js",
   "/map/page": "app/map/page.js",
+  "/sim-management/page": "app/sim-management/page.js",
   "/stations/[id]/page": "app/stations/[id]/page.js",
-  "/stations/page": "app/stations/page.js"
+  "/stations/page": "app/stations/page.js",
+  "/user-management/page": "app/user-management/page.js"
 }

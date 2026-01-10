@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: iot
+      POSTGRES_PASSWORD: nectec
+      POSTGRES_DB: environmental_monitoring
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./backend
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgres://iot:nectec@db:5432/environmental_monitoring
+    depends_on:
+      - db
+
+  web:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://api:4000
+    depends_on:
+      - api
+
+volumes:
+  db-data:

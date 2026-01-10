@@ -127,6 +127,66 @@ This system provides a modern React-based interface for monitoring agricultural 
 5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
+## Backend (API)
+
+The backend is a simple Express + PostgreSQL service that seeds the same sample data used by the UI.
+
+### Run locally
+
+Ensure PostgreSQL is running and the database exists (or use `docker compose up db`).
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+The API will be available at [http://localhost:4000](http://localhost:4000).
+
+### Environment variables
+
+- `PORT` (default: 4000)
+- `DATABASE_URL` (example: `postgres://user:password@localhost:5432/environmental_monitoring`)
+- Alternatively: `PGHOST`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`, `PGPORT`
+
+### API Endpoints
+
+Server 1 - Sensor Data
+- GET `/api/stations`
+- GET `/api/stations/:id/weather-data?range=3|7|15|30`
+- GET `/api/stations/:id/soil-data?range=3|7|15|30`
+- GET `/api/stations/:id/images`
+- GET `/api/weather-forecast`
+
+Server 2 - User Management
+- POST `/api/auth/login`
+- GET `/api/users`
+- POST `/api/users`
+- PUT `/api/users/:id`
+- DELETE `/api/users/:id`
+- GET `/api/permissions`
+- GET `/api/sim-cards`
+- PUT `/api/sim-cards/:id`
+
+Activities
+- GET `/api/activities`
+- POST `/api/activities`
+- PUT `/api/activities/:id`
+- DELETE `/api/activities/:id`
+
+## Docker
+
+Build and run both frontend and backend:
+
+```bash
+docker compose up --build
+```
+
+Frontend: [http://localhost:3000](http://localhost:3000)  
+Backend: [http://localhost:4000](http://localhost:4000)
+
+PostgreSQL (Docker): `localhost:5432` (user `app`, password `app`, db `environmental_monitoring`)
+
 ### Demo Credentials
 
 - **User Account**: username=`user1`, password=`user1`
