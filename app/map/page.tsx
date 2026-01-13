@@ -189,7 +189,7 @@ export default function MapPage() {
 
                   <div className="text-sm">
                     <p className="text-muted-foreground">อัปเดตล่าสุด:</p>
-                    <p>{formatThaiDateTime(selectedStation.lastDataTime)}</p>
+                    <p>{selectedStation.lastDataTime ? formatThaiDateTime(selectedStation.lastDataTime) : "-"}</p>
                   </div>
 
                   <div className="text-sm">

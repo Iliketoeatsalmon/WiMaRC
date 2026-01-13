@@ -1,8 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from sqlalchemy.orm import Session
 
-from .models import Station, User
+from .models import PlotActivity, SensorReading, SimPayment, Station, StationImage, User, WeatherForecast
 
 
 def minutes_ago(minutes: int) -> datetime:
@@ -435,6 +435,171 @@ def seed_stations(session: Session) -> None:
     session.commit()
 
 
+def seed_station_images(session: Session) -> None:
+    if session.query(StationImage).first():
+        return
+
+    stations = session.query(Station).order_by(Station.id).all()
+    images = [
+        StationImage(
+            id=f"image-{idx + 1:03d}",
+            station_id=station.id,
+            image_url="/placeholder.svg?height=480&width=640",
+            timestamp=minutes_ago(5 + idx * 3),
+        )
+        for idx, station in enumerate(stations)
+    ]
+
+    session.add_all(images)
+    session.commit()
+
+
+def seed_sim_payments(session: Session) -> None:
+    if session.query(SimPayment).first():
+        return
+
+    payments = [
+        SimPayment(
+            id="sim-001",
+            station_id="station-001",
+            station_name="ต.นายายอาม อ.นายายอาม จ.จันทบุรี",
+            sim_number="089-xxx-1234",
+            provider="AIS",
+            amount=350.0,
+            due_date=date.today() + timedelta(days=15),
+            status="pending",
+        ),
+        SimPayment(
+            id="sim-002",
+            station_id="station-019",
+            station_name="ต.สองพี่น้อง อ.ท่าใหม่ จ.จันทบุรี",
+            sim_number="089-xxx-5678",
+            provider="TRUE",
+            amount=420.0,
+            due_date=date.today() - timedelta(days=2),
+            status="pending",
+        ),
+        SimPayment(
+            id="sim-003",
+            station_id="station-027",
+            station_name="ต.แสลง อ.เมือง จ.จันทบุรี",
+            sim_number="089-xxx-9012",
+            provider="DTAC",
+            amount=390.0,
+            due_date=date.today() - timedelta(days=10),
+            status="paid",
+            paid_date=date.today() - timedelta(days=7),
+            notes="ชำระผ่านโอนเงิน",
+        ),
+    ]
+
+    session.add_all(payments)
+    session.commit()
+
+
+def seed_weather_forecasts(session: Session) -> None:
+    if session.query(WeatherForecast).first():
+        return
+
+    weather_stations = session.query(Station).filter(Station.type == "weather").all()
+    forecasts = []
+    for station in weather_stations:
+        for day in range(4):
+            forecast_date = date.today() + timedelta(days=day)
+            forecasts.append(
+                WeatherForecast(
+                    id=f"forecast-{station.id}-{day}",
+                    station_id=station.id,
+                    forecast_date=forecast_date,
+                    temperature=28.0 + day,
+                    rain_probability=20.0 + day * 5,
+                    rainfall=2.0 + day * 0.5,
+                    description="มีเมฆบางส่วน",
+                )
+            )
+
+    session.add_all(forecasts)
+    session.commit()
+
+
+def seed_sensor_readings(session: Session) -> None:
+    if session.query(SensorReading).first():
+        return
+
+    stations = session.query(Station).all()
+    readings = []
+    for station in stations:
+        for offset in range(3):
+            timestamp = datetime.utcnow() - timedelta(hours=offset * 3)
+            if station.type == "weather":
+                readings.append(
+                    SensorReading(
+                        id=f"reading-{station.id}-{offset}",
+                        station_id=station.id,
+                        timestamp=timestamp,
+                        air_temperature=28.5 + offset,
+                        relative_humidity=75.0 - offset,
+                        light_intensity=32000 + offset * 500,
+                        wind_direction=180,
+                        wind_speed=2.5 + offset * 0.2,
+                        rainfall=0.0,
+                        atmospheric_pressure=1012.5,
+                        vpd=1.1 + offset * 0.05,
+                    )
+                )
+            else:
+                readings.append(
+                    SensorReading(
+                        id=f"reading-{station.id}-{offset}",
+                        station_id=station.id,
+                        timestamp=timestamp,
+                        soil_moisture1=52.0 - offset,
+                        soil_moisture2=49.0 - offset * 0.8,
+                    )
+                )
+
+    session.add_all(readings)
+    session.commit()
+
+
+def seed_activities(session: Session) -> None:
+    if session.query(PlotActivity).first():
+        return
+
+    activities = [
+        PlotActivity(
+            id="activity-001",
+            station_id="station-019",
+            date=date.today() - timedelta(days=2),
+            activity_type="รดน้ำ",
+            description="รดน้ำช่วงเช้า 50 ลิตรต่อต้น",
+            created_by="user-002",
+            created_by_name="สมชาย ใจดี",
+            created_at=datetime.utcnow() - timedelta(days=2, hours=2),
+            images=["/placeholder.svg?height=300&width=400"],
+        ),
+        PlotActivity(
+            id="activity-002",
+            station_id="station-027",
+            date=date.today() - timedelta(days=5),
+            activity_type="ใส่ปุ๋ย",
+            description="ใส่ปุ๋ยสูตร 15-15-15",
+            created_by="user-003",
+            created_by_name="สมหญิง รักสวน",
+            created_at=datetime.utcnow() - timedelta(days=5, hours=1),
+            images=[],
+        ),
+    ]
+
+    session.add_all(activities)
+    session.commit()
+
+
 def seed_data(session: Session) -> None:
     seed_users(session)
     seed_stations(session)
+    seed_station_images(session)
+    seed_sim_payments(session)
+    seed_weather_forecasts(session)
+    seed_sensor_readings(session)
+    seed_activities(session)

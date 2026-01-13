@@ -138,8 +138,8 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-sm text-muted-foreground">
-                <p>อัปเดตล่าสุด: {formatThaiDateTime(selectedStation.lastDataTime)}</p>
-                <p>({getTimeDifference(selectedStation.lastDataTime)})</p>
+                <p>อัปเดตล่าสุด: {selectedStation.lastDataTime ? formatThaiDateTime(selectedStation.lastDataTime) : "-"}</p>
+                <p>({selectedStation.lastDataTime ? getTimeDifference(selectedStation.lastDataTime) : "ยังไม่มีข้อมูล"})</p>
               </div>
             </CardContent>
           </Card>

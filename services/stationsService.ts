@@ -1,44 +1,58 @@
 /**
  * Stations service
  * Handles all station-related data operations
- * In production, replace with real API calls
  */
 
 import type { Station, StationImage } from "@/types"
-import { mockStations } from "@/data/mockStations"
-import { mockStationImages } from "@/data/mockImages"
+import { apiRequest, ApiError } from "@/services/apiClient"
+import { mapStation, mapStationImage } from "@/services/apiMappers"
 
 /**
  * Get all stations
  */
 export async function getAllStations(): Promise<Station[]> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  return mockStations
+  const stations = await apiRequest<any[]>("/stations")
+  return stations.map(mapStation)
 }
 
 /**
  * Get station by ID
  */
 export async function getStationById(stationId: string): Promise<Station | null> {
-  await new Promise((resolve) => setTimeout(resolve, 200))
-  return mockStations.find((s) => s.id === stationId) || null
+  try {
+    const station = await apiRequest<any>(`/stations/${stationId}`)
+    return mapStation(station)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null
+    }
+    throw error
+  }
 }
 
 /**
  * Get stations by owner
  */
 export async function getStationsByOwner(userId: string): Promise<Station[]> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  return mockStations.filter((s) => s.ownerId === userId)
+  const stations = await apiRequest<any[]>("/stations", {
+    query: { owner_id: userId },
+  })
+  return stations.map(mapStation)
 }
 
 /**
  * Get latest image for a station
  */
 export async function getStationLatestImage(stationId: string): Promise<StationImage | null> {
-  await new Promise((resolve) => setTimeout(resolve, 200))
-  return mockStationImages.find((img) => img.stationId === stationId) || null
+  try {
+    const image = await apiRequest<any>(`/stations/${stationId}/images/latest`)
+    return mapStationImage(image)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null
+    }
+    throw error
+  }
 }
 
 /**

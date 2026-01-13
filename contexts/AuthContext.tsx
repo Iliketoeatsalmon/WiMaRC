@@ -26,7 +26,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem("wimarc_user")
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser))
+        const parsedUser = JSON.parse(storedUser)
+        if (parsedUser?.createdAt) {
+          parsedUser.createdAt = new Date(parsedUser.createdAt)
+        }
+        setUser(parsedUser)
       } catch (error) {
         console.error("Failed to parse stored user", error)
         localStorage.removeItem("wimarc_user")

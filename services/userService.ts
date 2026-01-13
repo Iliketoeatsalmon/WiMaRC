@@ -1,45 +1,55 @@
 /**
  * User management service
  * Handles CRUD operations for users (Admin only)
- * In production, replace with real API calls
  */
 
 import type { User } from "@/types"
-import { mockUsers } from "@/data/mockUsers"
-
-// In-memory storage for demo (would be database in production)
-const users: User[] = [...mockUsers]
+import { apiRequest, ApiError } from "@/services/apiClient"
+import { mapUser } from "@/services/apiMappers"
 
 /**
  * Get all users (Admin only)
  */
 export async function getAllUsers(): Promise<User[]> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  return [...users]
+  const users = await apiRequest<any[]>("/users")
+  return users.map(mapUser)
 }
 
 /**
  * Get user by ID
  */
 export async function getUserById(userId: string): Promise<User | null> {
-  await new Promise((resolve) => setTimeout(resolve, 200))
-  return users.find((u) => u.id === userId) || null
+  try {
+    const user = await apiRequest<any>(`/users/${userId}`)
+    return mapUser(user)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null
+    }
+    throw error
+  }
 }
 
 /**
  * Create new user
  */
 export async function createUser(userData: Omit<User, "id" | "createdAt">): Promise<User> {
-  await new Promise((resolve) => setTimeout(resolve, 400))
-
-  const newUser: User = {
-    ...userData,
-    id: `user-${Date.now()}`,
-    createdAt: new Date(),
+  const payload = {
+    username: userData.username,
+    password: userData.password,
+    role: userData.role,
+    full_name: userData.fullName,
+    email: userData.email,
+    is_enabled: userData.isEnabled,
+    permitted_station_ids: userData.permittedStationIds,
   }
 
-  users.push(newUser)
-  return newUser
+  const user = await apiRequest<any>("/users", {
+    method: "POST",
+    body: payload,
+  })
+
+  return mapUser(user)
 }
 
 /**
@@ -49,39 +59,53 @@ export async function updateUser(
   userId: string,
   updates: Partial<Omit<User, "id" | "createdAt">>,
 ): Promise<User | null> {
-  await new Promise((resolve) => setTimeout(resolve, 400))
+  const payload: Record<string, unknown> = {}
 
-  const index = users.findIndex((u) => u.id === userId)
-  if (index === -1) return null
+  if (updates.username !== undefined) payload.username = updates.username
+  if (updates.password !== undefined) payload.password = updates.password
+  if (updates.role !== undefined) payload.role = updates.role
+  if (updates.fullName !== undefined) payload.full_name = updates.fullName
+  if (updates.email !== undefined) payload.email = updates.email
+  if (updates.isEnabled !== undefined) payload.is_enabled = updates.isEnabled
+  if (updates.permittedStationIds !== undefined) payload.permitted_station_ids = updates.permittedStationIds
 
-  users[index] = {
-    ...users[index],
-    ...updates,
+  try {
+    const user = await apiRequest<any>(`/users/${userId}`, {
+      method: "PUT",
+      body: payload,
+    })
+    return mapUser(user)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null
+    }
+    throw error
   }
-
-  return users[index]
 }
 
 /**
  * Delete user
  */
 export async function deleteUser(userId: string): Promise<boolean> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-
-  const index = users.findIndex((u) => u.id === userId)
-  if (index === -1) return false
-
-  users.splice(index, 1)
-  return true
+  try {
+    await apiRequest<void>(`/users/${userId}`, {
+      method: "DELETE",
+    })
+    return true
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return false
+    }
+    throw error
+  }
 }
 
 /**
  * Toggle user enabled status
  */
 export async function toggleUserStatus(userId: string): Promise<boolean> {
-  const user = users.find((u) => u.id === userId)
+  const user = await getUserById(userId)
   if (!user) return false
-
-  user.isEnabled = !user.isEnabled
-  return true
+  const updated = await updateUser(userId, { isEnabled: !user.isEnabled })
+  return !!updated
 }

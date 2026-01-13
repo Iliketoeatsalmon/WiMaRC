@@ -1,53 +1,58 @@
 /**
  * Plot Activity service
  * Handles CRUD operations for agricultural activities
- * In production, replace with real API calls
  */
 
 import type { PlotActivity } from "@/types"
-import { mockActivities } from "@/data/mockActivities"
-
-// In-memory storage for demo (would be database in production)
-const activities: PlotActivity[] = [...mockActivities]
+import { apiRequest, ApiError } from "@/services/apiClient"
+import { formatDateOnly, mapPlotActivity } from "@/services/apiMappers"
 
 /**
  * Get all activities
  */
 export async function getAllActivities(): Promise<PlotActivity[]> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  return [...activities].sort((a, b) => b.date.getTime() - a.date.getTime())
+  const activities = await apiRequest<any[]>("/activities")
+  return activities.map(mapPlotActivity).sort((a, b) => b.date.getTime() - a.date.getTime())
 }
 
 /**
  * Get activities by station ID
  */
 export async function getActivitiesByStation(stationId: string): Promise<PlotActivity[]> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  return activities.filter((a) => a.stationId === stationId).sort((a, b) => b.date.getTime() - a.date.getTime())
+  const activities = await apiRequest<any[]>("/activities", {
+    query: { station_id: stationId },
+  })
+  return activities.map(mapPlotActivity).sort((a, b) => b.date.getTime() - a.date.getTime())
 }
 
 /**
  * Get activity by ID
  */
 export async function getActivityById(activityId: string): Promise<PlotActivity | null> {
-  await new Promise((resolve) => setTimeout(resolve, 200))
-  return activities.find((a) => a.id === activityId) || null
+  const activities = await getAllActivities()
+  return activities.find((activity) => activity.id === activityId) || null
 }
 
 /**
  * Create new activity
  */
 export async function createActivity(activity: Omit<PlotActivity, "id" | "createdAt">): Promise<PlotActivity> {
-  await new Promise((resolve) => setTimeout(resolve, 400))
-
-  const newActivity: PlotActivity = {
-    ...activity,
-    id: `activity-${Date.now()}`,
-    createdAt: new Date(),
+  const payload = {
+    station_id: activity.stationId,
+    date: formatDateOnly(activity.date),
+    activity_type: activity.activityType,
+    description: activity.description,
+    created_by: activity.createdBy,
+    created_by_name: activity.createdByName,
+    images: activity.images,
   }
 
-  activities.push(newActivity)
-  return newActivity
+  const created = await apiRequest<any>("/activities", {
+    method: "POST",
+    body: payload,
+  })
+
+  return mapPlotActivity(created)
 }
 
 /**
@@ -57,30 +62,45 @@ export async function updateActivity(
   activityId: string,
   updates: Partial<Omit<PlotActivity, "id" | "createdAt" | "createdBy">>,
 ): Promise<PlotActivity | null> {
-  await new Promise((resolve) => setTimeout(resolve, 400))
+  const payload: Record<string, unknown> = {}
 
-  const index = activities.findIndex((a) => a.id === activityId)
-  if (index === -1) return null
+  if (updates.stationId !== undefined) payload.station_id = updates.stationId
+  if (updates.date !== undefined) payload.date = formatDateOnly(updates.date)
+  if (updates.activityType !== undefined) payload.activity_type = updates.activityType
+  if (updates.description !== undefined) payload.description = updates.description
+  if (updates.createdByName !== undefined) payload.created_by_name = updates.createdByName
+  if (updates.images !== undefined) payload.images = updates.images
 
-  activities[index] = {
-    ...activities[index],
-    ...updates,
+  try {
+    const updated = await apiRequest<any>(`/activities/${activityId}`, {
+      method: "PUT",
+      body: payload,
+    })
+
+    return mapPlotActivity(updated)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null
+    }
+    throw error
   }
-
-  return activities[index]
 }
 
 /**
  * Delete activity
  */
 export async function deleteActivity(activityId: string): Promise<boolean> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-
-  const index = activities.findIndex((a) => a.id === activityId)
-  if (index === -1) return false
-
-  activities.splice(index, 1)
-  return true
+  try {
+    await apiRequest<void>(`/activities/${activityId}`, {
+      method: "DELETE",
+    })
+    return true
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return false
+    }
+    throw error
+  }
 }
 
 /**

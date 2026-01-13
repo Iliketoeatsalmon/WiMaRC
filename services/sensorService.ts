@@ -1,42 +1,40 @@
 /**
  * Sensor data service
  * Handles sensor reading operations and calculations
- * In production, replace with real-time API calls
  */
 
 import type { SensorReading, TimeRange, DailyAggregate, WeatherForecast } from "@/types"
-import { mockSensorData } from "@/data/mockSensorData"
-import { mockForecasts } from "@/data/mockForecasts"
-import { getStartDateForRange } from "@/utils/dateUtils"
+import { apiRequest } from "@/services/apiClient"
+import { mapSensorReading, mapWeatherForecast } from "@/services/apiMappers"
 
 /**
  * Get sensor readings for a station within a time range
  */
 export async function getSensorReadings(stationId: string, timeRange: TimeRange): Promise<SensorReading[]> {
-  await new Promise((resolve) => setTimeout(resolve, 400))
-
-  const startDate = getStartDateForRange(timeRange)
-  return mockSensorData.filter((reading) => reading.stationId === stationId && reading.timestamp >= startDate)
+  const readings = await apiRequest<any[]>(`/stations/${stationId}/readings`, {
+    query: { days: timeRange, limit: 1000 },
+  })
+  return readings
+    .map(mapSensorReading)
+    .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 }
 
 /**
  * Get latest sensor reading for a station
  */
 export async function getLatestSensorReading(stationId: string): Promise<SensorReading | null> {
-  await new Promise((resolve) => setTimeout(resolve, 200))
+  const readings = await apiRequest<any[]>(`/stations/${stationId}/readings`, {
+    query: { limit: 1 },
+  })
 
-  const stationReadings = mockSensorData.filter((r) => r.stationId === stationId)
-  if (stationReadings.length === 0) return null
-
-  return stationReadings.reduce((latest, current) => (current.timestamp > latest.timestamp ? current : latest))
+  if (readings.length === 0) return null
+  return mapSensorReading(readings[0])
 }
 
 /**
  * Calculate daily aggregates from sensor readings
  */
 export async function getDailyAggregates(stationId: string, timeRange: TimeRange): Promise<DailyAggregate[]> {
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
   const readings = await getSensorReadings(stationId, timeRange)
 
   // Group readings by date
@@ -128,6 +126,6 @@ export async function getDailyAggregates(stationId: string, timeRange: TimeRange
  * Get weather forecast for a station
  */
 export async function getWeatherForecast(stationId: string): Promise<WeatherForecast[]> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  return mockForecasts.filter((f) => f.stationId === stationId)
+  const forecasts = await apiRequest<any[]>(`/stations/${stationId}/forecast`)
+  return forecasts.map(mapWeatherForecast)
 }

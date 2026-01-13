@@ -4,6 +4,11 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class AuthLogin(BaseModel):
+    username: str
+    password: str
+
+
 class StationBase(BaseModel):
     name: str
     type: str
@@ -34,6 +39,15 @@ class StationUpdate(BaseModel):
 
 class StationOut(StationBase):
     id: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class StationImageOut(BaseModel):
+    id: str
+    station_id: str
+    image_url: str
+    timestamp: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -77,9 +91,71 @@ class PlotActivityCreate(PlotActivityBase):
     id: Optional[str] = None
 
 
+class PlotActivityUpdate(BaseModel):
+    station_id: Optional[str] = None
+    date: Optional[date] = None
+    activity_type: Optional[str] = None
+    description: Optional[str] = None
+    created_by_name: Optional[str] = None
+    images: Optional[List[str]] = None
+
+
 class PlotActivityOut(PlotActivityBase):
     id: str
     created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class SimPaymentBase(BaseModel):
+    station_id: str
+    station_name: Optional[str] = None
+    sim_number: str
+    provider: str
+    amount: float
+    due_date: date
+    status: str
+    paid_date: Optional[date] = None
+    notes: Optional[str] = None
+
+
+class SimPaymentCreate(SimPaymentBase):
+    id: Optional[str] = None
+
+
+class SimPaymentUpdate(BaseModel):
+    station_id: Optional[str] = None
+    station_name: Optional[str] = None
+    sim_number: Optional[str] = None
+    provider: Optional[str] = None
+    amount: Optional[float] = None
+    due_date: Optional[date] = None
+    status: Optional[str] = None
+    paid_date: Optional[date] = None
+    notes: Optional[str] = None
+
+
+class SimPaymentOut(SimPaymentBase):
+    id: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class WeatherForecastBase(BaseModel):
+    station_id: str
+    forecast_date: date
+    temperature: float
+    rain_probability: float
+    rainfall: float
+    description: str
+
+
+class WeatherForecastCreate(WeatherForecastBase):
+    id: Optional[str] = None
+
+
+class WeatherForecastOut(WeatherForecastBase):
+    id: str
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -95,3 +171,24 @@ class UserOut(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserCreate(BaseModel):
+    id: Optional[str] = None
+    username: str
+    password: str
+    role: str
+    full_name: str
+    email: str
+    is_enabled: bool = True
+    permitted_station_ids: List[str] = Field(default_factory=list)
+
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    password: Optional[str] = None
+    role: Optional[str] = None
+    full_name: Optional[str] = None
+    email: Optional[str] = None
+    is_enabled: Optional[bool] = None
+    permitted_station_ids: Optional[List[str]] = None

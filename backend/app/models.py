@@ -80,7 +80,23 @@ class SimPayment(Base):
 
     id = Column(String, primary_key=True)
     sim_number = Column(String, nullable=False)
+    provider = Column(String, nullable=False)
+    amount = Column(Float, nullable=False)
     station_id = Column(String, ForeignKey("stations.id"), nullable=False)
-    station_name = Column(String, nullable=False)
-    payment_due_date = Column(Date, nullable=False)
-    payment_status = Column(String, nullable=False)
+    station_name = Column(String, nullable=True)
+    due_date = Column(Date, nullable=False)
+    status = Column(String, nullable=False)
+    paid_date = Column(Date, nullable=True)
+    notes = Column(Text, nullable=True)
+
+
+class WeatherForecast(Base):
+    __tablename__ = "weather_forecasts"
+
+    id = Column(String, primary_key=True)
+    station_id = Column(String, ForeignKey("stations.id"), index=True, nullable=False)
+    forecast_date = Column(Date, nullable=False)
+    temperature = Column(Float, nullable=False)
+    rain_probability = Column(Float, nullable=False)
+    rainfall = Column(Float, nullable=False)
+    description = Column(String, nullable=False)

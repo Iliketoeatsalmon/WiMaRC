@@ -270,8 +270,8 @@ export default function SystemStatusPage() {
                       <td className="p-3">
                         <StatusBadge status={station.status} />
                       </td>
-                      <td className="p-3 text-xs">{formatThaiDateTime(station.lastDataTime)}</td>
-                      <td className="p-3 text-xs text-muted-foreground">{getTimeDifference(station.lastDataTime)}</td>
+                      <td className="p-3 text-xs">{station.lastDataTime ? formatThaiDateTime(station.lastDataTime) : "-"}</td>
+                      <td className="p-3 text-xs text-muted-foreground">{station.lastDataTime ? getTimeDifference(station.lastDataTime) : "ยังไม่มีข้อมูล"}</td>
                       <td className="p-3 text-center">
                         <Button variant="ghost" size="sm" onClick={() => handleStationClick(station.id)}>
                           ดูรายละเอียด

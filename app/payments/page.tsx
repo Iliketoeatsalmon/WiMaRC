@@ -28,42 +28,57 @@ export default function PaymentsPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingPayment, setEditingPayment] = useState<SimPayment | undefined>()
 
-  useEffect(() => {
-    if (user) {
-      const userStations = StationsService.getStationsByUser(user)
-      setStations(userStations)
-      loadPayments()
-    }
-  }, [user, selectedStation, selectedStatus])
-
-  const loadPayments = () => {
-    const filters: any = {}
+  const loadPayments = async () => {
+    const filters: { stationId?: string } = {}
 
     if (selectedStation !== "all") {
       filters.stationId = selectedStation
     }
 
-    if (selectedStatus !== "all") {
-      filters.status = selectedStatus
-    }
-
-    const data = SimPaymentService.getPayments(filters)
+    const data = await SimPaymentService.getPayments(Object.keys(filters).length ? filters : undefined)
     setPayments(data)
   }
 
-  const handleSubmit = (data: Partial<SimPayment>) => {
-    if (editingPayment) {
-      SimPaymentService.updatePayment(editingPayment.id, data)
-    } else {
-      SimPaymentService.createPayment(data as Omit<SimPayment, "id">)
+  useEffect(() => {
+    if (!user) return
+
+    let isCancelled = false
+
+    const loadData = async () => {
+      const userStations = await StationsService.getStationsByUser(user)
+      if (isCancelled) return
+      setStations(userStations)
+
+      const filters: { stationId?: string } = {}
+      if (selectedStation !== "all") {
+        filters.stationId = selectedStation
+      }
+
+      const data = await SimPaymentService.getPayments(Object.keys(filters).length ? filters : undefined)
+      if (isCancelled) return
+      setPayments(data)
     }
-    loadPayments()
+
+    loadData()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [user, selectedStation])
+
+  const handleSubmit = async (data: Partial<SimPayment>) => {
+    if (editingPayment) {
+      await SimPaymentService.updatePayment(editingPayment.id, data)
+    } else {
+      await SimPaymentService.createPayment(data as Omit<SimPayment, "id">)
+    }
+    await loadPayments()
     setEditingPayment(undefined)
   }
 
-  const handleMarkPaid = (payment: SimPayment) => {
-    SimPaymentService.markAsPaid(payment.id, new Date())
-    loadPayments()
+  const handleMarkPaid = async (payment: SimPayment) => {
+    await SimPaymentService.markAsPaid(payment.id, new Date())
+    await loadPayments()
   }
 
   const handleExport = () => {
@@ -84,21 +99,24 @@ export default function PaymentsPage() {
   }
 
   const filteredPayments = payments.filter((payment) => {
+    if (selectedStatus !== "all" && payment.status !== selectedStatus) {
+      return false
+    }
+
     const station = stations.find((s) => s.id === payment.stationId)
     const searchLower = searchTerm.toLowerCase()
+    const stationName = station?.name?.toLowerCase() || ""
 
     return (
-      station?.name.toLowerCase().includes(searchLower) ||
+      stationName.includes(searchLower) ||
       payment.simNumber.toLowerCase().includes(searchLower) ||
       payment.provider.toLowerCase().includes(searchLower)
     )
   })
 
   const amounts = SimPaymentService.getTotalAmounts(filteredPayments)
-  const overduePayments = SimPaymentService.getOverduePayments(selectedStation !== "all" ? selectedStation : undefined)
-  const upcomingPayments = SimPaymentService.getUpcomingPayments(
-    selectedStation !== "all" ? selectedStation : undefined,
-  )
+  const overduePayments = SimPaymentService.getOverduePayments(payments)
+  const upcomingPayments = SimPaymentService.getUpcomingPayments(payments)
 
   const getStatusBadge = (payment: SimPayment) => {
     if (payment.status === "paid") {
@@ -219,7 +237,7 @@ export default function PaymentsPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">สถานีทั้งหมด</SelectItem>
+                <SelectItem value="all">ทุกสถานี</SelectItem>
                 {stations.map((station) => (
                   <SelectItem key={station.id} value={station.id}>
                     {station.name}
@@ -228,117 +246,73 @@ export default function PaymentsPage() {
               </SelectContent>
             </Select>
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger className="w-full md:w-[200px]">
+              <SelectTrigger className="w-full md:w-[160px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">สถานะทั้งหมด</SelectItem>
+                <SelectItem value="all">ทุกสถานะ</SelectItem>
                 <SelectItem value="pending">รอชำระ</SelectItem>
                 <SelectItem value="paid">ชำระแล้ว</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Overdue Alert */}
-          {overduePayments.length > 0 && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-red-900">มีรายการเกินกำหนดชำระ {overduePayments.length} รายการ</h4>
-                  <p className="text-sm text-red-700 mt-1">กรุณาตรวจสอบและดำเนินการชำระเงินโดยเร็วที่สุด</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Upcoming Alert */}
-          {upcomingPayments.length > 0 && (
-            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-start gap-3">
-                <Clock className="h-5 w-5 text-yellow-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-yellow-900">
-                    มีรายการที่ใกล้ครบกำหนดชำระ {upcomingPayments.length} รายการ
-                  </h4>
-                  <p className="text-sm text-yellow-700 mt-1">ภายใน 30 วันข้างหน้า</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Payments Table */}
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>สถานี</TableHead>
-                  <TableHead>หมายเลข SIM</TableHead>
-                  <TableHead>ผู้ให้บริการ</TableHead>
-                  <TableHead className="text-right">จำนวนเงิน</TableHead>
-                  <TableHead>วันครบกำหนด</TableHead>
-                  <TableHead>วันที่ชำระ</TableHead>
-                  <TableHead>สถานะ</TableHead>
-                  <TableHead>หมายเหตุ</TableHead>
-                  {canEditActivities(user) && <TableHead className="text-right">จัดการ</TableHead>}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredPayments.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                      ไม่พบข้อมูลรายการชำระเงิน
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>สถานี</TableHead>
+                <TableHead>หมายเลข SIM</TableHead>
+                <TableHead>ผู้ให้บริการ</TableHead>
+                <TableHead className="text-right">จำนวนเงิน</TableHead>
+                <TableHead>วันครบกำหนด</TableHead>
+                <TableHead>สถานะ</TableHead>
+                <TableHead className="text-right">การดำเนินการ</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredPayments.map((payment) => {
+                const station = stations.find((s) => s.id === payment.stationId)
+                return (
+                  <TableRow key={payment.id}>
+                    <TableCell>{station?.name || payment.stationId}</TableCell>
+                    <TableCell>{payment.simNumber}</TableCell>
+                    <TableCell>{payment.provider}</TableCell>
+                    <TableCell className="text-right">฿{payment.amount.toLocaleString()}</TableCell>
+                    <TableCell>{format(new Date(payment.dueDate), "dd/MM/yyyy", { locale: th })}</TableCell>
+                    <TableCell>{getStatusBadge(payment)}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex gap-2 justify-end">
+                        {canEditActivities(user) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditingPayment(payment)
+                              setShowForm(true)
+                            }}
+                          >
+                            แก้ไข
+                          </Button>
+                        )}
+                        {payment.status === "pending" && canEditActivities(user) && (
+                          <Button variant="outline" size="sm" onClick={() => handleMarkPaid(payment)}>
+                            ชำระแล้ว
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  filteredPayments.map((payment) => {
-                    const station = stations.find((s) => s.id === payment.stationId)
-                    return (
-                      <TableRow key={payment.id}>
-                        <TableCell className="font-medium">{station?.name}</TableCell>
-                        <TableCell>{payment.simNumber}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{payment.provider}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-medium">฿{payment.amount.toLocaleString()}</TableCell>
-                        <TableCell>{format(new Date(payment.dueDate), "dd MMM yyyy", { locale: th })}</TableCell>
-                        <TableCell>
-                          {payment.paidDate ? format(new Date(payment.paidDate), "dd MMM yyyy", { locale: th }) : "-"}
-                        </TableCell>
-                        <TableCell>{getStatusBadge(payment)}</TableCell>
-                        <TableCell className="max-w-[200px] truncate">{payment.notes || "-"}</TableCell>
-                        {canEditActivities(user) && (
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              {payment.status === "pending" && (
-                                <Button size="sm" variant="outline" onClick={() => handleMarkPaid(payment)}>
-                                  ชำระแล้ว
-                                </Button>
-                              )}
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => {
-                                  setEditingPayment(payment)
-                                  setShowForm(true)
-                                }}
-                              >
-                                แก้ไข
-                              </Button>
-                            </div>
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    )
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                )
+              })}
+            </TableBody>
+          </Table>
+
+          {filteredPayments.length === 0 && (
+            <div className="py-8 text-center text-muted-foreground">ไม่มีรายการชำระเงิน</div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Payment Form Dialog */}
       <PaymentFormDialog
         open={showForm}
         onOpenChange={setShowForm}
@@ -346,6 +320,34 @@ export default function PaymentsPage() {
         payment={editingPayment}
         onSubmit={handleSubmit}
       />
+
+      {upcomingPayments.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">รายการใกล้ครบกำหนด (30 วัน)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {upcomingPayments.map((payment) => {
+                const station = stations.find((s) => s.id === payment.stationId)
+                return (
+                  <div key={payment.id} className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                    <div>
+                      <p className="font-medium">{station?.name || payment.stationId}</p>
+                      <p className="text-sm text-muted-foreground">
+                        ครบกำหนด {format(new Date(payment.dueDate), "dd/MM/yyyy", { locale: th })}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="bg-yellow-100 text-yellow-700">
+                      ฿{payment.amount.toLocaleString()}
+                    </Badge>
+                  </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

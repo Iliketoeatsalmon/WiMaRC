@@ -77,12 +77,6 @@ const navItems: NavItem[] = [
     icon: GitCompare,
   },
   {
-    href: "/sim-payment",
-    label: "จัดการซิม",
-    icon: CreditCard,
-    requiresSimAccess: true,
-  },
-  {
     href: "/admin/system-status",
     label: "สถานะการทำงานของระบบ",
     icon: Settings,
@@ -93,6 +87,12 @@ const navItems: NavItem[] = [
     label: "จัดการผู้ใช้งาน",
     icon: Users,
     adminOnly: true,
+  },
+  {
+    href: "/sim-payment",
+    label: "จัดการซิม",
+    icon: CreditCard,
+    requiresSimAccess: true,
   },
 ]
 

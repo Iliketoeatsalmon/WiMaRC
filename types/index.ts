@@ -10,7 +10,7 @@ export type UserRole = "Admin" | "User" | "Guest"
 export interface User {
   id: string
   username: string
-  password: string // In production, this would be hashed
+  password?: string // In production, this would be hashed
   role: UserRole
   fullName: string
   email: string
@@ -34,7 +34,7 @@ export interface Station {
   latitude: number
   longitude: number
   status: StationStatus
-  lastDataTime: Date
+  lastDataTime: Date | null
   area: string // Geographic area name in Thai
   description: string
 }
@@ -87,7 +87,24 @@ export interface PlotActivity {
   images: string[] // Array of image URLs, max 3
 }
 
+// SIM payment status
+export type SimPaymentStatus = "pending" | "paid"
+
 // SIM payment record - tracks payment due dates for SIM cards
+export interface SimPayment {
+  id: string
+  stationId: string
+  stationName?: string
+  simNumber: string
+  provider: string
+  amount: number
+  dueDate: Date
+  status: SimPaymentStatus
+  paidDate?: Date | null
+  notes?: string
+}
+
+// Legacy SIM payment record used by mock data
 export interface SimPaymentRecord {
   id: string
   simNumber: string

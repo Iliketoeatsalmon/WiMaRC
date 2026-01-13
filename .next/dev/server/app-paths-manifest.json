@@ -1,13 +1,1 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/activities/page": "app/activities/page.js",
-  "/admin/system-status/page": "app/admin/system-status/page.js",
-  "/admin/users/page": "app/admin/users/page.js",
-  "/compare/page": "app/compare/page.js",
-  "/daily/page": "app/daily/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/download/page": "app/download/page.js",
-  "/historical/page": "app/historical/page.js",
-  "/map/page": "app/map/page.js",
-  "/page": "app/page.js"
-}
+{}

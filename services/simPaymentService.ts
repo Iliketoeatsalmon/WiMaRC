@@ -1,98 +1,107 @@
 import type { SimPayment, SimPaymentStatus } from "@/types"
-import { mockSimPayments } from "@/data/mockSimPayments"
+import { apiRequest, ApiError } from "@/services/apiClient"
+import { formatDateOnly, mapSimPayment } from "@/services/apiMappers"
 
 // Service for managing SIM card payment tracking
 export class SimPaymentService {
-  // In-memory storage (replace with database in production)
-  private static payments: SimPayment[] = [...mockSimPayments]
-
   // Get all payment records, optionally filtered
-  static getPayments(filters?: {
-    stationId?: string
-    status?: SimPaymentStatus
-    startDate?: Date
-    endDate?: Date
-  }): SimPayment[] {
-    let filtered = [...this.payments]
-
-    if (filters?.stationId) {
-      filtered = filtered.filter((p) => p.stationId === filters.stationId)
-    }
-
-    if (filters?.status) {
-      filtered = filtered.filter((p) => p.status === filters.status)
-    }
-
-    if (filters?.startDate) {
-      filtered = filtered.filter((p) => new Date(p.dueDate) >= filters.startDate!)
-    }
-
-    if (filters?.endDate) {
-      filtered = filtered.filter((p) => new Date(p.dueDate) <= filters.endDate!)
-    }
-
-    // Sort by due date descending
-    return filtered.sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime())
+  static async getPayments(filters?: { stationId?: string; status?: SimPaymentStatus }): Promise<SimPayment[]> {
+    const payments = await apiRequest<any[]>("/sim-payments", {
+      query: {
+        station_id: filters?.stationId,
+        status: filters?.status,
+      },
+    })
+    return payments.map(mapSimPayment)
   }
 
   // Get payment by ID
-  static getPaymentById(id: string): SimPayment | undefined {
-    return this.payments.find((p) => p.id === id)
+  static async getPaymentById(id: string): Promise<SimPayment | null> {
+    const payments = await this.getPayments()
+    return payments.find((payment) => payment.id === id) || null
   }
 
   // Create new payment record
-  static createPayment(data: Omit<SimPayment, "id">): SimPayment {
-    const newPayment: SimPayment = {
-      ...data,
-      id: `PAY-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  static async createPayment(data: Omit<SimPayment, "id">): Promise<SimPayment> {
+    const payload = {
+      station_id: data.stationId,
+      station_name: data.stationName,
+      sim_number: data.simNumber,
+      provider: data.provider,
+      amount: data.amount,
+      due_date: formatDateOnly(data.dueDate),
+      status: data.status,
+      paid_date: data.paidDate ? formatDateOnly(data.paidDate) : null,
+      notes: data.notes,
     }
-    this.payments.push(newPayment)
-    return newPayment
+
+    const payment = await apiRequest<any>("/sim-payments", {
+      method: "POST",
+      body: payload,
+    })
+
+    return mapSimPayment(payment)
   }
 
   // Update payment record
-  static updatePayment(id: string, data: Partial<SimPayment>): SimPayment | null {
-    const index = this.payments.findIndex((p) => p.id === id)
-    if (index === -1) return null
+  static async updatePayment(id: string, data: Partial<SimPayment>): Promise<SimPayment | null> {
+    const payload: Record<string, unknown> = {}
 
-    this.payments[index] = {
-      ...this.payments[index],
-      ...data,
+    if (data.stationId !== undefined) payload.station_id = data.stationId
+    if (data.stationName !== undefined) payload.station_name = data.stationName
+    if (data.simNumber !== undefined) payload.sim_number = data.simNumber
+    if (data.provider !== undefined) payload.provider = data.provider
+    if (data.amount !== undefined) payload.amount = data.amount
+    if (data.dueDate !== undefined) payload.due_date = formatDateOnly(data.dueDate)
+    if (data.status !== undefined) payload.status = data.status
+    if (data.paidDate !== undefined) payload.paid_date = data.paidDate ? formatDateOnly(data.paidDate) : null
+    if (data.notes !== undefined) payload.notes = data.notes
+
+    try {
+      const payment = await apiRequest<any>(`/sim-payments/${id}`, {
+        method: "PUT",
+        body: payload,
+      })
+      return mapSimPayment(payment)
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return null
+      }
+      throw error
     }
-    return this.payments[index]
   }
 
   // Mark payment as paid
-  static markAsPaid(id: string, paymentDate: Date, notes?: string): SimPayment | null {
+  static async markAsPaid(id: string, paymentDate: Date, notes?: string): Promise<SimPayment | null> {
     return this.updatePayment(id, {
       status: "paid",
       paidDate: paymentDate,
-      notes: notes || this.payments.find((p) => p.id === id)?.notes,
+      notes,
     })
   }
 
   // Get upcoming payments (due within next 30 days)
-  static getUpcomingPayments(stationId?: string): SimPayment[] {
+  static getUpcomingPayments(payments: SimPayment[], stationId?: string): SimPayment[] {
     const now = new Date()
     const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
-    return this.getPayments({
-      stationId,
-      status: "pending",
-    }).filter((p) => {
-      const dueDate = new Date(p.dueDate)
-      return dueDate >= now && dueDate <= thirtyDaysFromNow
-    })
+    return payments
+      .filter((payment) => (stationId ? payment.stationId === stationId : true))
+      .filter((payment) => payment.status === "pending")
+      .filter((payment) => {
+        const dueDate = new Date(payment.dueDate)
+        return dueDate >= now && dueDate <= thirtyDaysFromNow
+      })
   }
 
   // Get overdue payments
-  static getOverduePayments(stationId?: string): SimPayment[] {
+  static getOverduePayments(payments: SimPayment[], stationId?: string): SimPayment[] {
     const now = new Date()
 
-    return this.getPayments({
-      stationId,
-      status: "pending",
-    }).filter((p) => new Date(p.dueDate) < now)
+    return payments
+      .filter((payment) => (stationId ? payment.stationId === stationId : true))
+      .filter((payment) => payment.status === "pending")
+      .filter((payment) => new Date(payment.dueDate) < now)
   }
 
   // Calculate total amounts
