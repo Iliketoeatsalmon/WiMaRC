@@ -5,6 +5,11 @@ node_modules
 npm-debug.log
 yarn-error.log
 pnpm-debug.log
+backend/__pycache__
+backend/.pytest_cache
+backend/.venv
+backend/dist
+backend/build
 backend/node_modules
 backend/data
-backend/dist
+**/*.log

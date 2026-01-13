@@ -1,0 +1,52 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    environment:
+      NEXT_DISABLE_TURBOPACK: "1"
+      NEXT_TELEMETRY_DISABLED: "1"
+    command: >
+      sh -c "if [ ! -d node_modules ]; then pnpm install; fi;
+      pnpm exec next dev -H 0.0.0.0 -p 3000"
+    depends_on:
+      backend:
+        condition: service_started
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: wimarc
+      POSTGRES_USER: wimarc
+      POSTGRES_PASSWORD: wimarc
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wimarc -d wimarc"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://wimarc:wimarc@db:5432/wimarc
+      CORS_ORIGINS: http://localhost:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

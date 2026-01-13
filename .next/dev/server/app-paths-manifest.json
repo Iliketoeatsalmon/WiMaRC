@@ -1,11 +1,13 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/activities/page": "app/activities/page.js",
-  "/comparison/page": "app/comparison/page.js",
+  "/admin/system-status/page": "app/admin/system-status/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
+  "/compare/page": "app/compare/page.js",
+  "/daily/page": "app/daily/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/login/page": "app/login/page.js",
+  "/download/page": "app/download/page.js",
+  "/historical/page": "app/historical/page.js",
   "/map/page": "app/map/page.js",
-  "/sim-management/page": "app/sim-management/page.js",
-  "/stations/[id]/page": "app/stations/[id]/page.js",
-  "/stations/page": "app/stations/page.js",
-  "/user-management/page": "app/user-management/page.js"
+  "/page": "app/page.js"
 }
