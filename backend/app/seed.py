@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+import random
 
 from sqlalchemy.orm import Session
 
@@ -523,40 +524,93 @@ def seed_weather_forecasts(session: Session) -> None:
 
 
 def seed_sensor_readings(session: Session) -> None:
-    if session.query(SensorReading).first():
+    start_of_year = datetime(datetime.utcnow().year, 1, 1)
+    start_of_year_date = start_of_year.date()
+    has_any = session.query(SensorReading).first() is not None
+    oldest = session.query(SensorReading).order_by(SensorReading.timestamp.asc()).first()
+    oldest_date = oldest.timestamp.date() if oldest else None
+    has_year_data = oldest_date is not None and oldest_date <= (start_of_year_date + timedelta(days=1))
+
+    if has_any and has_year_data:
         return
 
     stations = session.query(Station).all()
     readings = []
-    for station in stations:
-        for offset in range(3):
-            timestamp = datetime.utcnow() - timedelta(hours=offset * 3)
-            if station.type == "weather":
-                readings.append(
-                    SensorReading(
-                        id=f"reading-{station.id}-{offset}",
-                        station_id=station.id,
-                        timestamp=timestamp,
-                        air_temperature=28.5 + offset,
-                        relative_humidity=75.0 - offset,
-                        light_intensity=32000 + offset * 500,
-                        wind_direction=180,
-                        wind_speed=2.5 + offset * 0.2,
-                        rainfall=0.0,
-                        atmospheric_pressure=1012.5,
-                        vpd=1.1 + offset * 0.05,
+    rng = random.Random(2024)
+
+    if not has_any:
+        for station in stations:
+            for offset in range(3):
+                timestamp = datetime.utcnow() - timedelta(hours=offset * 3)
+                if station.type == "weather":
+                    readings.append(
+                        SensorReading(
+                            id=f"reading-{station.id}-{offset}",
+                            station_id=station.id,
+                            timestamp=timestamp,
+                            air_temperature=28.5 + offset,
+                            relative_humidity=75.0 - offset,
+                            light_intensity=32000 + offset * 500,
+                            wind_direction=180,
+                            wind_speed=2.5 + offset * 0.2,
+                            rainfall=0.0,
+                            atmospheric_pressure=1012.5,
+                            vpd=1.1 + offset * 0.05,
+                        )
                     )
-                )
-            else:
-                readings.append(
-                    SensorReading(
-                        id=f"reading-{station.id}-{offset}",
-                        station_id=station.id,
-                        timestamp=timestamp,
-                        soil_moisture1=52.0 - offset,
-                        soil_moisture2=49.0 - offset * 0.8,
+                else:
+                    readings.append(
+                        SensorReading(
+                            id=f"reading-{station.id}-{offset}",
+                            station_id=station.id,
+                            timestamp=timestamp,
+                            soil_moisture1=52.0 - offset,
+                            soil_moisture2=49.0 - offset * 0.8,
+                        )
                     )
-                )
+
+    if not has_year_data:
+        days = (datetime.utcnow().date() - start_of_year.date()).days + 1
+        for station in stations:
+            for day_offset in range(days):
+                day_date = start_of_year.date() + timedelta(days=day_offset)
+                timestamp = datetime.combine(day_date, datetime.min.time()) + timedelta(hours=12)
+                if station.type == "weather":
+                    air_temperature = round(rng.uniform(26.0, 34.5), 1)
+                    relative_humidity = round(rng.uniform(60.0, 90.0), 1)
+                    light_intensity = round(rng.uniform(18000, 62000), 0)
+                    wind_direction = round(rng.uniform(0, 360), 0)
+                    wind_speed = round(rng.uniform(0.8, 4.8), 1)
+                    rainfall = round(rng.uniform(0.5, 8.0), 1) if rng.random() < 0.3 else 0.0
+                    atmospheric_pressure = round(rng.uniform(1008.0, 1018.5), 1)
+                    vpd = round(rng.uniform(0.7, 1.8), 2)
+                    readings.append(
+                        SensorReading(
+                            id=f"reading-{station.id}-{day_date:%Y%m%d}",
+                            station_id=station.id,
+                            timestamp=timestamp,
+                            air_temperature=air_temperature,
+                            relative_humidity=relative_humidity,
+                            light_intensity=light_intensity,
+                            wind_direction=wind_direction,
+                            wind_speed=wind_speed,
+                            rainfall=rainfall,
+                            atmospheric_pressure=atmospheric_pressure,
+                            vpd=vpd,
+                        )
+                    )
+                else:
+                    soil_moisture1 = round(rng.uniform(38.0, 68.0), 1)
+                    soil_moisture2 = round(rng.uniform(35.0, 65.0), 1)
+                    readings.append(
+                        SensorReading(
+                            id=f"reading-{station.id}-{day_date:%Y%m%d}",
+                            station_id=station.id,
+                            timestamp=timestamp,
+                            soil_moisture1=soil_moisture1,
+                            soil_moisture2=soil_moisture2,
+                        )
+                    )
 
     session.add_all(readings)
     session.commit()
